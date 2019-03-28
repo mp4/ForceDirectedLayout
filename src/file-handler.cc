@@ -38,13 +38,14 @@ bool FileHandler::read(vector<Node>& nodes, vector<Edge>& edges){
 
 	if(type_ == "JSON"){
 		parse_json(nodes, edges);
+        return true;
 	}
-
-	if(type_ == "GraphML"){
+	else if(type_ == "GraphML"){
 		parse_graphml(nodes, edges);
+        return true;
 	}
 
-	return true;
+	return false;
 }
 
 // Method for writing nodes and edges out to a file
@@ -55,13 +56,19 @@ bool FileHandler::write(vector<Node>& nodes, vector<Edge>& edges){
 
 	if(type_ == "JSON"){
 		write_json(nodes, edges);
+        return true;
 	}
-
-	if(type_ == "GraphML"){
+	else if(type_ == "GraphML"){
 		write_graphml(nodes, edges);
+        return true;
 	}
+	else if(type_ == "CSV"){
+        write_csv(nodes, edges);
+        return true;
+    }
+	
 
-	return true;
+	return false;
 }
 
 // Method for retrieving the error string.
@@ -355,6 +362,65 @@ bool FileHandler::write_json(vector<Node>& nodes, vector<Edge>& edges){
 	}
 
 	return true;
+}
+
+// Method for writing nodes and edges out to a csv file.
+// @param vector<Node> nodes
+// @param vector<Edge> edges
+// @return bool
+bool FileHandler::write_csv(vector<Node>& nodes, vector<Edge>& edges){
+    
+    std::string file_contents = "Node,x,y,z\n";
+    
+    //nodes
+    for(int i=0; i<nodes.size(); i++){
+        Node n = nodes[i];
+        
+        std::string line = "" + n.id + "," + std::to_string(n.x) + "," + std::to_string(n.y) + "," + std::to_string(n.z) + "\n";
+        file_contents.append(line);
+    }
+    
+    /*
+    //edges
+    Json::Value jsonEdges(Json::arrayValue);
+    
+    for(int i=0; i<edges.size(); i++){
+        Edge e = edges[i];
+        
+        Json::Value jsonEdge;
+        jsonEdge["id"] = e.id;
+        jsonEdge["source"] = e.source_id;
+        jsonEdge["target"] = e.target_id;
+        
+        //additional attributes
+        for(map<string,string>::iterator itr = e.attributes.begin();
+            itr != e.attributes.end();
+        itr++){
+            
+            jsonEdge[ itr->first ] = itr->second;
+        }
+        
+        jsonEdges.append(jsonEdge);
+    }
+    
+    root["edges"] = jsonEdges;
+    
+    Json::StyledWriter writer;
+    string json_text = writer.write(root);
+    */
+    
+    if(filename_.empty()){
+        //write to std out
+        cout << file_contents << endl;
+    }
+    else{
+        //write out to file
+        ofstream file(filename_.data());
+        file.write(file_contents.c_str(), file_contents.size());
+        file.close();
+    }
+    
+    return true;
 }
 
 // Method for writing nodes and edges out to a GraphML file.

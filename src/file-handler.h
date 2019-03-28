@@ -56,6 +56,7 @@ class FileHandler {
 	bool write_json(vector<Node>&, vector<Edge>&);
 	bool parse_graphml(vector<Node>&, vector<Edge>&);
 	bool write_graphml(vector<Node>&, vector<Edge>&);
+    bool write_csv(vector<Node>&, vector<Edge>&);
 
 };
 
